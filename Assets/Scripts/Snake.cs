@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour
 {
-    private Vector2 _direction = Vector2.right;
-    private Vector2 _nextDirection = Vector2.right;
+    private Vector2Int _direction = Vector2Int.right;
+    private Vector2Int _nextDirection = Vector2Int.right;
     public List<Transform> segments = new List<Transform>();
     public Transform segmentPrefab;
     public int intialSize = 4;
@@ -21,21 +21,21 @@ public class Snake : MonoBehaviour
     private void Update()
     {
         // set direction and prevent instant u-turn suicide
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && _direction != Vector2.down)
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && _direction != Vector2Int.down)
         {
-            _nextDirection = Vector2.up;
+            _nextDirection = Vector2Int.up;
         }
-        else if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) && _direction != Vector2.up)
+        else if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) && _direction != Vector2Int.up)
         {
-            _nextDirection = Vector2.down;
+            _nextDirection = Vector2Int.down;
         }
-        else if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && _direction != Vector2.right)
+        else if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && _direction != Vector2Int.right)
         {
-            _nextDirection = Vector2.left;
+            _nextDirection = Vector2Int.left;
         }
-        else if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && _direction != Vector2.left)
+        else if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && _direction != Vector2Int.left)
         {
-            _nextDirection = Vector2.right;
+            _nextDirection = Vector2Int.right;
         }
     }
 

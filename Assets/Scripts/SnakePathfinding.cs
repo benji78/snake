@@ -17,23 +17,6 @@ public class SnakePathfinding : MonoBehaviour
         LogPath(path, Vector2Int.RoundToInt(snakeHead.position));
     }
 
-    void FixedUpdate()
-    {
-        // if (Input.GetKeyDown(KeyCode.Tab)) // For testing
-        // {
-        // List<Vector2> path = FindPath(snakeHead.position, food.position);
-        // if (path != null)
-        // {
-        //     Debug.Log("Path found!");
-        //     // Move snake along path
-        // }
-        // else
-        // {
-        //     Debug.Log("No path found!");
-        // }
-        // }
-    }
-
     void InitializeGrid()
     {
         int halfWidth = Mathf.RoundToInt(gameMaster.gridWidth / 2);

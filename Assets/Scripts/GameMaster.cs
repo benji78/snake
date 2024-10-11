@@ -71,7 +71,7 @@ public class GameMaster : MonoBehaviour
         _gridHeight = height - wallThickness;
 
         // Resize food boundary BoxCollider2D (position already at 0,0)
-        foodBound.size = new Vector2(width - 1 - wallThickness, height - 1 - wallThickness);
+        foodBound.size = new Vector2Int(width - 1 - wallThickness, height - 1 - wallThickness);
         // remove 1m and wallThickness (half that on either side) so the food don't spawn on the walls
     }
 }
