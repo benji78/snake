@@ -1,30 +1,65 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Food : MonoBehaviour
+namespace SnakeGame
 {
-    public BoxCollider2D gridArea;
-
-    private void Start()
+    public class Food : MonoBehaviour
     {
-        RandomizePosition();
-    }
+        private GameManager _gameManager;
+        private Dictionary<Vector2Int, Node> _grid;
 
-    private void RandomizePosition()
-    {
-        Bounds bounds = this.gridArea.bounds;
-
-        float x = Random.Range(bounds.min.x, bounds.max.x);
-        float y = Random.Range(bounds.min.y, bounds.max.y);
-
-        this.transform.position = new Vector3(Mathf.Round(x), Mathf.Round(y), 0f);
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // when the snake eats the food
-        if (other.tag == "Player")
+        private void Start()
         {
+            _gameManager = GameManager.Instance;
+            _grid = _gameManager.grid;
+
             RandomizePosition();
+        }
+
+        public bool IsValidFoodPosition(Vector2Int position)
+        {
+            return _grid.ContainsKey(position) && _grid[position].type == NodeType.Empty;
+        }
+
+        public List<Vector2Int> GetEmptyPositions()
+        {
+            List<Vector2Int> emptyPositions = new List<Vector2Int>();
+            foreach (KeyValuePair<Vector2Int, Node> kvpNode in _grid)
+            {
+                if (kvpNode.Value.type == NodeType.Empty)
+                {
+                    emptyPositions.Add(kvpNode.Key);
+                }
+            }
+            return emptyPositions;
+        }
+
+        private void RandomizePosition()
+        {
+            List<Vector2Int> emptyPositions = GetEmptyPositions();
+            if (emptyPositions.Count == 0)
+            {
+                Debug.LogWarning("No empty positions available for food!"); return;
+            }
+
+            // Pick a random empty position
+            int randomIndex = Random.Range(0, emptyPositions.Count);
+            Vector2Int newPos = emptyPositions[randomIndex];
+
+            // Update position
+            transform.position = _gameManager.GridToWorld(newPos);
+
+            // add to grid
+            _gameManager.grid[newPos].type = NodeType.Food;
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            // when the snake eats the food
+            if (other.tag == "Player")
+            {
+                RandomizePosition();
+            }
         }
     }
 }
