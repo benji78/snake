@@ -5,12 +5,13 @@ namespace SnakeGame
 {
     public class Food : MonoBehaviour
     {
-        private GameManager _gameManager;
+        [Header("Dependencies")]
+        [SerializeField] private GameManager _gameManager;
+
         private Dictionary<Vector2Int, Node> _grid;
 
         private void Start()
         {
-            _gameManager = GameManager.Instance;
             _grid = _gameManager.grid;
 
             RandomizePosition();

@@ -7,20 +7,17 @@ namespace SnakeGame
     {
         private Vector2Int _direction = Vector2Int.right;
         private Vector2Int _nextDirection = Vector2Int.right;
+
         public List<Transform> segments = new List<Transform>();
-        public Transform segmentPrefab;
-        public SnakePathfinding snakePathfinding;
-        private GameManager _gameManager;
+
+        [Header("Dependencies")]
+        [SerializeField] private Transform _segmentPrefab;
+        [SerializeField] private SnakePathfinding _snakePathfinding;
+        [SerializeField] private GameManager _gameManager;
 
         // Start is called before the first frame update
         private void Start()
         {
-            _gameManager = GameManager.Instance;
-            // if (_gameManager == null)
-            // {
-            //     Debug.LogError("GameManager not found!"); return;
-            // }
-
             SetState();
         }
 
@@ -48,6 +45,8 @@ namespace SnakeGame
 
         private void FixedUpdate()
         {
+            if (_gameManager.isPaused) return;
+
             if (_gameManager.isPathfinding) Pathfind();
 
             Move();
@@ -58,7 +57,7 @@ namespace SnakeGame
 
         private void Pathfind()
         {
-            _nextDirection = snakePathfinding.AStar() ?? _nextDirection;
+            _nextDirection = _snakePathfinding.AStar() ?? _nextDirection;
             // Vector2Int? direction = snakePathfinding.AStar();
             // if (direction == null)
             // {
@@ -92,7 +91,7 @@ namespace SnakeGame
 
         private void Grow()
         {
-            Transform segment = Instantiate(this.segmentPrefab);
+            Transform segment = Instantiate(this._segmentPrefab);
 
             segment.position = segments[segments.Count - 1].position;
 
@@ -107,11 +106,12 @@ namespace SnakeGame
 
             for (int i = 1; i < _gameManager.intialSnakeSize; i++)
             {
-                segments.Add(Instantiate(this.segmentPrefab));
+                segments.Add(Instantiate(this._segmentPrefab));
             }
         }
         private void ResetState()
         {
+            _gameManager.ResetScore();
             // destroy every segment except the first (head)
             for (int i = 1; i < segments.Count; i++)
             {
@@ -127,6 +127,7 @@ namespace SnakeGame
             if (other.tag == "Food")
             {
                 Grow();
+                _gameManager.IncrementScore();
             }
             else if (other.tag == "Obstacle")
             {

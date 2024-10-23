@@ -5,18 +5,18 @@ namespace SnakeGame
 {
     public class SnakePathfinding : MonoBehaviour
     {
-        public Transform food;
-        public Snake snake;
+        [Header("Dependencies")]
+        [SerializeField] private Transform _food;
+        [SerializeField] private Snake _snake;
+        [SerializeField] private GameManager _gameManager;
 
         private Transform _snakeHead;
         private Dictionary<Vector2Int, Node> _grid;
-        private GameManager _gameManager;
 
         void Start()
         {
-            _gameManager = GameManager.Instance;
             _grid = _gameManager.grid;
-            _snakeHead = snake.transform;
+            _snakeHead = _snake.transform;
 
             List<Vector2Int> path = FindPathToFood();
             LogPath(path, Vector2Int.RoundToInt(_snakeHead.position));
@@ -60,7 +60,7 @@ namespace SnakeGame
         List<Vector2Int> FindPathToFood()
         {
             // Debug.Log(_snakeHead.position);
-            return FindPath(Vector2Int.RoundToInt(_snakeHead.position), Vector2Int.RoundToInt(food.position));
+            return FindPath(Vector2Int.RoundToInt(_snakeHead.position), Vector2Int.RoundToInt(_food.position));
         }
 
         List<Vector2Int> FindPath(Vector2Int startPos, Vector2Int targetPos)

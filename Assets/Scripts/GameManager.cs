@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,60 +12,80 @@ namespace SnakeGame
 
     public class GameManager : MonoBehaviour
     {
-        public static GameManager Instance { get; private set; }
-
-        public Transform wallPrefab;
+        [Header("Dependencies")]
+        [SerializeField] private Transform _wallPrefab;
+        [SerializeField] private PauseMenuManager _pauseMenuManager;
 
         [Header("Movement Settings")]
         [Tooltip("Time between movements in seconds")]
-        [Range(0.05f, 1f)]
-        public float moveInterval = 0.2f;
+        [Range(minMoveInterval, maxMoveInterval)]
+        public float moveInterval = .055f; // add [System.NonSerialized] to prevent serialisation
 
         [Header("Game Settings")]
         public bool isPaused = false;
         public bool isPathfinding = true;
-        // needs to be odd for wall to aligh with grid
+        [Tooltip("Needs to be odd for wall to aligh with grid")]
         public int wallThickness = 1;
         public int intialSnakeSize = 4;
 
-        protected int gridWidth { get; private set; }
-        protected int gridHeight { get; private set; }
-
         private Camera _camera;
 
+        public int gridWidth { get; private set; }
+        public int gridHeight { get; private set; }
+        public int score { get; private set; }
         public Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+
+        public const float moveIntervalStep = .005f;
+        public const float minMoveInterval = .01f;
+        public const float maxMoveInterval = .1f;
+        public const int minSpeed = 1;
+        public const int maxSpeed = (int)((maxMoveInterval - minMoveInterval) / moveIntervalStep + minSpeed);
 
         private void Awake()
         {
-            // Simple singleton setup
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-                _camera = Camera.main;
-                MoveWallsToCamera();
-                InitialiseGrid();
-                if (isPaused) Time.timeScale = 0;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            _camera = Camera.main;
+            MoveWallsToCamera();
+            InitialiseGrid();
+            if (isPaused) Time.timeScale = 0;
         }
 
         void Update()
         {
-            // (un)pause on spacebar
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                isPaused = !isPaused;
-            }
-            // (un)pathfind on tab
+            // toggle pathfinding on tab
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 isPathfinding = !isPathfinding;
+                _pauseMenuManager.UpdatePathfinding();
             }
-            Time.timeScale = isPaused ? 0 : 1;
+            // slow down with J
+            if (Input.GetKeyDown(KeyCode.J) && moveInterval < maxMoveInterval)
+            {
+                moveInterval += moveIntervalStep;
+                _pauseMenuManager.UpdateGameSpeed();
+            }
+            // speed up with K
+            else if (Input.GetKeyDown(KeyCode.K) && moveInterval > minMoveInterval)
+            {
+                moveInterval -= moveIntervalStep;
+                _pauseMenuManager.UpdateGameSpeed();
+            }
+        }
+
+        public void RestartGame()
+        {
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Reload current scene
+        }
+
+        public void IncrementScore()
+        {
+            score += 1;
+            _pauseMenuManager.UpdateScoreText();
+        }
+
+        public void ResetScore()
+        {
+            score = 0;
+            _pauseMenuManager.UpdateScoreText();
         }
 
         private void MoveWallsToCamera()
@@ -84,10 +103,10 @@ namespace SnakeGame
             int height = (int)(topRight.y - bottomLeft.y);
 
             // create move and resize walls to camera view
-            Transform wallLeft = Instantiate(wallPrefab);
-            Transform wallRight = Instantiate(wallPrefab);
-            Transform wallBottom = Instantiate(wallPrefab);
-            Transform wallTop = Instantiate(wallPrefab);
+            Transform wallLeft = Instantiate(_wallPrefab);
+            Transform wallRight = Instantiate(_wallPrefab);
+            Transform wallBottom = Instantiate(_wallPrefab);
+            Transform wallTop = Instantiate(_wallPrefab);
             wallLeft.transform.position = new Vector2(bottomLeft.x, bottomLeft.y + height / 2);
             wallRight.transform.position = new Vector2(topRight.x, bottomLeft.y + height / 2);
             wallBottom.transform.position = new Vector2(bottomLeft.x + width / 2, bottomLeft.y);
@@ -163,7 +182,6 @@ namespace SnakeGame
                     Debug.LogWarning("Snake head outside grid (did you crash into a wall?) " + segmentPos);
                 }
                 else Debug.LogError("Snake segment outside grid ! " + segmentPos);
-
             }
         }
     }
