@@ -46,7 +46,7 @@ namespace SnakeGame
             _camera = Camera.main;
             MoveWallsToCamera();
             InitialiseGrid();
-            if (isPaused) Time.timeScale = 0;
+            // if (isPaused) Time.timeScale = 0;
         }
 
         void Update()

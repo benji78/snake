@@ -37,6 +37,7 @@ namespace SnakeGame
             // Set initial toggle state
             _pathfindingToggle.isOn = _gameManager.isPathfinding;
         }
+
         private void Update()
         {
             // Toggle pause menu on ESC or SpaceBar keypress
@@ -46,13 +47,8 @@ namespace SnakeGame
                 TogglePauseMenu();
             }
             _pausePanel.SetActive(_gameManager.isPaused);
-            Time.timeScale = _gameManager.isPaused ? 0f : 1f;
+            // Time.timeScale = _gameManager.isPaused ? 0f : 1f;
             Time.fixedDeltaTime = _gameManager.moveInterval;
-        }
-
-        private void onEnable()
-        {
-
         }
 
         private void TogglePauseMenu()
@@ -60,7 +56,7 @@ namespace SnakeGame
             _gameManager.isPaused = !_gameManager.isPaused;
             _gameScoreText.enabled = !_gameManager.isPaused;
             _pausePanel.SetActive(_gameManager.isPaused);
-            Time.timeScale = _gameManager.isPaused ? 0f : 1f;
+            // Time.timeScale = _gameManager.isPaused ? 0f : 1f;
         }
 
         private void TogglePathfinding(bool isOn)
